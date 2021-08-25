@@ -3,7 +3,6 @@
 namespace whitelabeled\PartnerizeApi;
 
 use DateTime;
-use Exception;
 
 /**
  * Class Transaction

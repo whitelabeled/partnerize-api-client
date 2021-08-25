@@ -1,4 +1,4 @@
-# Daisycon API client
+# Partnerize API client
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/whitelabeled/partnerize-api-client.svg)](https://packagist.org/packages/whitelabeled/partnerize-api-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/whitelabeled/partnerize-api-client.svg)](https://packagist.org/packages/whitelabeled/partnerize-api-client)
