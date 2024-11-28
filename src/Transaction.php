@@ -78,28 +78,28 @@ class Transaction
 
     /**
      * Create a Transaction object from two JSON objects
-     * @param \stdClass $transData Transaction data
+     * @param array $transData Transaction data
      * @return Transaction
      */
     public static function createFromJson($transData)
     {
         $transaction = new Transaction();
 
-        $transaction->id = (string)$transData->conversion_id;
-        $transaction->campaignId = (string)$transData->campaign_id;
-        $transaction->program = (string)$transData->campaign_title;
-        $transaction->ipAddress = (string)$transData->click->set_ip;
-        $transaction->publisherReference = (string)$transData->publisher_reference;
-        $transaction->conversionReference = (string)$transData->conversion_reference;
-        $transaction->sourceReferer = (string)$transData->source_referer;
-        $transaction->deviceType = (string)$transData->ref_device;
+        $transaction->id = (string)$transData['conversion_id'];
+        $transaction->campaignId = (string)$transData['campaign_id'];
+        $transaction->program = (string)$transData['campaign_title'];
+        $transaction->ipAddress = (string)$transData['click']['set_ip'];
+        $transaction->publisherReference = (string)$transData['publisher_reference'];
+        $transaction->conversionReference = (string)$transData['conversion_reference'];
+        $transaction->sourceReferer = (string)$transData['source_referer'];
+        $transaction->deviceType = (string)$transData['ref_device'];
 
-        $transaction->transactionDate = self::parseDate($transData->conversion_time);
-        $transaction->clickDate = self::parseDate($transData->click->set_time);
-        $transaction->lastModifiedDate = self::parseDate($transData->last_modified);
+        $transaction->transactionDate = self::parseDate($transData['conversion_time']);
+        $transaction->clickDate = self::parseDate($transData['click']['set_time']);
+        $transaction->lastModifiedDate = self::parseDate($transData['last_modified']);
 
-        $transaction->status = (string)$transData->conversion_value->conversion_status;
-        $transaction->commissionAmount = (double)$transData->conversion_value->publisher_commission;
+        $transaction->status = (string)$transData['conversion_value']['conversion_status'];
+        $transaction->commissionAmount = (double)$transData['conversion_value']['publisher_commission'];
 
         return $transaction;
     }

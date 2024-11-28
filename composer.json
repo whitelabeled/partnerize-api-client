@@ -2,9 +2,6 @@
     "name": "whitelabeled/partnerize-api-client",
     "description": "Partnerize API client",
     "type": "library",
-    "require": {
-        "nategood/httpful": "^0.2.20"
-    },
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -16,5 +13,10 @@
             "name": "Whitelabeled",
             "email": "info@whitelabeled.nl"
         }
-    ]
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "ext-json": "*",
+        "php": ">=7.4"
+    }
 }

@@ -3,7 +3,7 @@
 namespace whitelabeled\PartnerizeApi;
 
 use DateTime;
-use Httpful\Request;
+use Psr\Http\Message\ResponseInterface;
 
 class PartnerizeClient
 {
@@ -49,15 +49,19 @@ class PartnerizeClient
 
         $query = '?' . http_build_query($params);
         $response = $this->makeRequest("/reporting/report_publisher/publisher/{$this->publisherId}/conversion.json", $query);
-        
-        $transactions = [];
-        $transactionsData = $response->body;
 
-        if ($transactionsData != null) {
-            foreach ($transactionsData->conversions as $transactionData) {
-                $transaction = Transaction::createFromJson($transactionData->conversion_data);
-                $transactions[] = $transaction;
-            }
+        $transactions = [];
+
+        // Decode JSON response:
+        $transactionsData = json_decode($response->getBody()->getContents(), true);
+
+        if ($transactionsData == null) {
+            throw new PartnerizeApiException('Invalid data (could not decode JSON)');
+        }
+
+        foreach ($transactionsData['conversions'] as $singleTransactionData) {
+            $transaction = Transaction::createFromJson($singleTransactionData['conversion_data']);
+            $transactions[] = $transaction;
         }
 
         return $transactions;
@@ -66,22 +70,27 @@ class PartnerizeClient
     /**
      * @param        $resource
      * @param string $query
-     * @return mixed
+     * @return ResponseInterface
      * @throws PartnerizeApiException
      */
     protected function makeRequest($resource, $query = "")
     {
         $uri = $this->endpoint . $resource;
 
-        $request = Request::get($uri . $query)
-            ->authenticateWithBasic($this->username, $this->password)
-            ->expectsJson();
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('GET', $uri . $query, [
+            'auth' => [$this->username, $this->password],
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+            'http_errors' => false,
+        ]);
 
-        $response = $request->send();
-
-        // Check for errors
-        if ($response->hasErrors()) {
-            throw new PartnerizeApiException('Invalid data');
+        if ($response->getStatusCode() != 200) {
+            if ($response->getStatusCode() == 401) {
+                throw new PartnerizeApiException('Invalid credentials');
+            }
+            throw new PartnerizeApiException('Invalid response: HTTP status ' . $response->getStatusCode());
         }
 
         return $response;
